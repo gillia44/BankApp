@@ -9,7 +9,7 @@ public class User {
 
     /*
     * Constructor for the User class.
-    * Holders information about a particular user in the Bank.
+    * Holds information about a particular user in the Bank.
     */
     public User(int customerId, String name, String address, String phoneNumber) {
         this.customerId = customerId;
