@@ -8,8 +8,8 @@ public class Customer {
     private SavingsAccount savingsAccount;
 
     /*
-    * Constructor for the User class.
-    * Holds information about a particular user in the Bank.
+    * Constructor for the Customer class.
+    * Holds information about a particular customer in the Bank.
     */
     public Customer(int customerId, String name, String address, String phoneNumber) {
         this.customerId = customerId;
