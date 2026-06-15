@@ -4,8 +4,8 @@ public class Main {
         // Create bank
         Bank bank = new Bank();
 
-        // Create new user
-        User user = new User(
+        // Create new customer
+        Customer customer = new Customer(
                 1001,
                 "John Smith",
                 "123 Main Street",
@@ -16,12 +16,12 @@ public class Main {
         CheckingAccount checking = new CheckingAccount("CHK001", 1000);
         SavingsAccount savings = new SavingsAccount("SAV001", 5000, 0.03);
 
-        // Set the checking and savings account for the user
-        user.setCheckingAccount(checking);
-        user.setSavingsAccount(savings);
+        // Set the checking and savings account for the customer
+        customer.setCheckingAccount(checking);
+        customer.setSavingsAccount(savings);
 
         // Add the customer to the bank
-        bank.addCustomer(user);
+        bank.addCustomer(customer);
 
         // Display information
         System.out.println("Before Transfer:");
@@ -29,7 +29,7 @@ public class Main {
         System.out.println("Savings: $" + String.format("%.2f", savings.getBalance()));
 
         // Make a transfer
-        bank.transferCheckingToSavings(user, 250);
+        bank.transferCheckingToSavings(customer, 250);
 
         // Display information
         System.out.println("\nAfter Transfer:");
