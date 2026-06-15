@@ -5,7 +5,7 @@ public class Main {
         Bank bank = new Bank();
 
         // Create new user
-        User user = new User(
+        Customer user = new Customer(
                 1001,
                 "John Smith",
                 "123 Main Street",

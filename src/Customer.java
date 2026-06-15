@@ -1,4 +1,4 @@
-public class User {
+public class Customer {
     private String name;
     private String address;
     private String phoneNumber;
@@ -11,7 +11,7 @@ public class User {
     * Constructor for the User class.
     * Holds information about a particular user in the Bank.
     */
-    public User(int customerId, String name, String address, String phoneNumber) {
+    public Customer(int customerId, String name, String address, String phoneNumber) {
         this.customerId = customerId;
         this.name = name;
         this.address = address;

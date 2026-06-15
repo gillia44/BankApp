@@ -3,7 +3,7 @@ import java.util.Map;
 
 public class Bank {
 
-    private Map<Integer, User> customers;
+    private Map<Integer, Customer> customers;
 
     /*
     * Constructor for the Bank class. This class holds the customers, and provides the
@@ -17,7 +17,7 @@ public class Bank {
     * Add a customer to the bank.
     * @param The user to add to the bank.
     */
-    public void addCustomer(User user) {
+    public void addCustomer(Customer user) {
         customers.put(user.getCustomerId(), user);
     }
 
@@ -26,7 +26,7 @@ public class Bank {
     * @param The user to search for.
     * @return The user 
     */
-    public User findCustomer(int customerId) {
+    public Customer findCustomer(int customerId) {
         return customers.get(customerId);
     }
 
@@ -34,7 +34,7 @@ public class Bank {
     * Displays a list of all customers.
     */
     public void displayAllCustomers() {
-        for (User user : customers.values()) {
+        for (Customer user : customers.values()) {
             System.out.println(user);
             System.out.println("----------------");
         }
@@ -46,7 +46,7 @@ public class Bank {
     * @param The amount to transfer.
     * @return If the transfer was successful.
     */
-    public boolean transferCheckingToSavings(User user, double amount) {
+    public boolean transferCheckingToSavings(Customer user, double amount) {
 
         CheckingAccount checking = user.getCheckingAccount();
         SavingsAccount savings = user.getSavingsAccount();
@@ -65,7 +65,7 @@ public class Bank {
     * @param The amount to transfer.
     * @return If the transfer was successful.
     */
-    public boolean transferSavingsToChecking(User user, double amount) {
+    public boolean transferSavingsToChecking(Customer user, double amount) {
 
         SavingsAccount savings = user.getSavingsAccount();
         CheckingAccount checking = user.getCheckingAccount();
