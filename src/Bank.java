@@ -1,5 +1,6 @@
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Collection;
 
 public class Bank {
 
@@ -28,6 +29,23 @@ public class Bank {
     */
     public Customer findCustomer(int customerId) {
         return customers.get(customerId);
+    }
+
+    /*
+    * Checks whether a customer ID already exists in the bank.
+    * @param The customer ID to check.
+    * @return Whether the ID is already in use.
+    */
+    public boolean customerExists(int customerId) {
+        return customers.containsKey(customerId);
+    }
+
+    /*
+    * Gets all customers in the bank, for display purposes.
+    * @return A collection of all customers.
+    */
+    public Collection<Customer> getAllCustomers() {
+        return customers.values();
     }
 
     /*
