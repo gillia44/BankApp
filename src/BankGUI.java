@@ -10,14 +10,29 @@ import java.util.List;
  * Swing front end for the Bank / Customer / BankAccount model classes.
  * Lets the user create customers, open checking and savings accounts,
  * make deposits and withdrawals, and transfer funds between accounts.
+ *
+ * Access to the full customer directory is restricted to the "Bank Employee"
+ * role at login; a "Customer" logs in with their own Customer ID and only
+ * ever sees their own accounts.
  */
 public class BankGUI extends JFrame {
+
+    /** The two kinds of users who can log in to the application. */
+    private enum Role { EMPLOYEE, CUSTOMER }
+
+    // Demo-only access code gating the employee role. In a real application
+    // this would be replaced with a proper authentication system.
+    private static final String EMPLOYEE_PASSCODE = "1234";
 
     private final Bank bank = new Bank();
     private int nextCustomerId = 1001;
 
+    private Role currentRole;
+    private final JLabel sessionLabel = new JLabel();
+
     private final DefaultListModel<Customer> customerListModel = new DefaultListModel<>();
     private final JList<Customer> customerList = new JList<>(customerListModel);
+    private JPanel customersTab;
 
     // Profile tab
     private final JTextField nameField = new JTextField();
@@ -54,14 +69,16 @@ public class BankGUI extends JFrame {
     private final JTabbedPane detailTabs = new JTabbedPane();
 
     public BankGUI() {
-        super("Banking Application");
+        super("Bank Management System");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(900, 600);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
 
-        add(buildCustomerListPanel(), BorderLayout.WEST);
+        add(buildSessionBar(), BorderLayout.NORTH);
         add(buildDetailPanel(), BorderLayout.CENTER);
+
+        customersTab = buildCustomersTab();
 
         setDetailEnabled(false);
         customerList.addListSelectionListener(e -> {
@@ -69,17 +86,126 @@ public class BankGUI extends JFrame {
                 refreshDetailPanel();
             }
         });
+
+        promptLogin();
     }
 
-    // ---------- Left panel: customer list ----------
+    // ---------- Top bar: session info / log out ----------
 
-    private JPanel buildCustomerListPanel() {
+    private JPanel buildSessionBar() {
+        JPanel bar = new JPanel(new BorderLayout());
+        bar.setBorder(new EmptyBorder(8, 12, 8, 12));
+        bar.setBackground(new Color(235, 238, 242));
+
+        sessionLabel.setFont(sessionLabel.getFont().deriveFont(Font.BOLD));
+        bar.add(sessionLabel, BorderLayout.WEST);
+
+        JButton logOutButton = new JButton("Log Out");
+        logOutButton.addActionListener(e -> logOut());
+        bar.add(logOutButton, BorderLayout.EAST);
+
+        return bar;
+    }
+
+    // ---------- Login flow ----------
+
+    /**
+     * Shows a blocking login prompt asking whether the user is a bank
+     * employee or a customer, then configures the UI accordingly.
+     * Employees must enter an access code; customers must enter a valid
+     * Customer ID that already exists in the bank.
+     */
+    private void promptLogin() {
+        while (true) {
+            Object[] options = {"Bank Employee", "Customer"};
+            int choice = JOptionPane.showOptionDialog(this,
+                    "Please select how you are logging in:",
+                    "Log In", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+                    null, options, options[0]);
+
+            if (choice == JOptionPane.CLOSED_OPTION) {
+                System.exit(0);
+                return;
+            }
+
+            if (choice == 0) {
+                String code = JOptionPane.showInputDialog(this,
+                        "Enter employee access code (demo code: " + EMPLOYEE_PASSCODE + "):",
+                        "Employee Login", JOptionPane.PLAIN_MESSAGE);
+                if (code == null) {
+                    continue; // back to role selection
+                }
+                if (!EMPLOYEE_PASSCODE.equals(code.trim())) {
+                    JOptionPane.showMessageDialog(this, "Incorrect access code.", "Access Denied",
+                            JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+                logInAsEmployee();
+                return;
+            } else {
+                String idText = JOptionPane.showInputDialog(this,
+                        "Enter your Customer ID:", "Customer Login", JOptionPane.PLAIN_MESSAGE);
+                if (idText == null) {
+                    continue; // back to role selection
+                }
+                try {
+                    int id = Integer.parseInt(idText.trim());
+                    Customer customer = bank.findCustomer(id);
+                    if (customer == null) {
+                        JOptionPane.showMessageDialog(this,
+                                "No customer found with that ID. Please ask a bank employee to set up your profile first.",
+                                "Not Found", JOptionPane.WARNING_MESSAGE);
+                        continue;
+                    }
+                    logInAsCustomer(customer);
+                    return;
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Customer ID must be a number.", "Invalid Input",
+                            JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        }
+    }
+
+    private void logInAsEmployee() {
+        currentRole = Role.EMPLOYEE;
+        if (detailTabs.indexOfComponent(customersTab) == -1) {
+            detailTabs.insertTab("Customers", null, customersTab, null, 0);
+        }
+        detailTabs.setSelectedComponent(customersTab);
+        sessionLabel.setText("Logged in as: Bank Employee");
+        customerList.clearSelection();
+        refreshDetailPanel();
+    }
+
+    private void logInAsCustomer(Customer customer) {
+        currentRole = Role.CUSTOMER;
+        int tabIndex = detailTabs.indexOfComponent(customersTab);
+        if (tabIndex != -1) {
+            detailTabs.remove(customersTab);
+        }
+        sessionLabel.setText("Logged in as: " + customer.getName() + " (Customer ID " + customer.getCustomerId() + ")");
+        customerList.setSelectedValue(customer, true);
+        detailTabs.setSelectedIndex(0);
+        refreshDetailPanel();
+    }
+
+    private void logOut() {
+        currentRole = null;
+        customerList.clearSelection();
+        setDetailEnabled(false);
+        sessionLabel.setText("");
+        promptLogin();
+    }
+
+    // ---------- Customers tab (employee only) ----------
+
+    private JPanel buildCustomersTab() {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
-        panel.setBorder(new EmptyBorder(10, 10, 10, 5));
-        panel.setPreferredSize(new Dimension(260, 0));
+        panel.setBorder(new EmptyBorder(15, 15, 15, 15));
 
-        JLabel header = new JLabel("Customers");
-        header.setFont(header.getFont().deriveFont(Font.BOLD, 16f));
+        JLabel header = new JLabel("All Customers (Bank Employee access only)");
+        header.setFont(header.getFont().deriveFont(Font.BOLD, 14f));
         panel.add(header, BorderLayout.NORTH);
 
         customerList.setCellRenderer((list, customer, index, isSelected, cellHasFocus) -> {
@@ -95,6 +221,7 @@ public class BankGUI extends JFrame {
             }
             return label;
         });
+        customerList.setVisibleRowCount(12);
         panel.add(new JScrollPane(customerList), BorderLayout.CENTER);
 
         JButton newCustomerButton = new JButton("New Customer");
