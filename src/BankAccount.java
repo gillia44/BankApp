@@ -1,6 +1,10 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class BankAccount {
     protected String accountNumber;
     protected double balance;
+    protected List<Transaction> transactions;
 
     /*
     * Constructor for the BankAccount abstract class.
@@ -8,6 +12,7 @@ public abstract class BankAccount {
     public BankAccount(String accountNumber, double balance) {
         this.accountNumber = accountNumber;
         this.balance = balance;
+        this.transactions = new ArrayList<>();
     }
 
     /*
@@ -17,6 +22,7 @@ public abstract class BankAccount {
     public void deposit(double amount) {
         if (amount > 0) {
             balance += amount;
+            transactions.add(new Transaction("Deposit", amount));
         }
     }
 
@@ -28,6 +34,7 @@ public abstract class BankAccount {
     public boolean withdraw(double amount) {
         if (amount > 0 && amount <= balance) {
             balance -= amount;
+            transactions.add(new Transaction("Withdraw", amount));
             return true;
         }
         return false;
@@ -47,6 +54,14 @@ public abstract class BankAccount {
     */
     public String getAccountNumber() {
         return accountNumber;
+    }
+
+    /*
+    * Get the transaction history for this account.
+    * @return The list of transactions.
+    */
+    public List<Transaction> getTransactions() {
+        return transactions;
     }
 
     /*

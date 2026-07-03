@@ -1,46 +1,16 @@
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+
 public class Main {
-
     public static void main(String[] args) {
-        // Create bank
-        Bank bank = new Bank();
-
-        // Create new customer
-        Customer customer = new Customer(
-                1001,
-                "John Smith",
-                "123 Main Street",
-                "555-1234"
-        );
-
-        // Create checking and savings accounts
-        CheckingAccount checking = new CheckingAccount("CHK001", 1000);
-        SavingsAccount savings = new SavingsAccount("SAV001", 5000, 0.03);
-
-        // Set the checking and savings account for the customer
-        customer.setCheckingAccount(checking);
-        customer.setSavingsAccount(savings);
-
-        // Add the customer to the bank
-        bank.addCustomer(customer);
-
-        // Display information
-        System.out.println("Before Transfer:");
-        System.out.println("Checking: $" + String.format("%.2f", checking.getBalance()));
-        System.out.println("Savings: $" + String.format("%.2f", savings.getBalance()));
-
-        // Make a transfer
-        bank.transferCheckingToSavings(customer, 250);
-
-        // Display information
-        System.out.println("\nAfter Transfer:");
-        System.out.println("Checking: $" + String.format("%.2f", checking.getBalance()));
-        System.out.println("Savings: $" + String.format("%.2f", savings.getBalance()));
-
-        // Apply interest to the savings account
-        savings.applyInterest();
-
-        // Display information
-        System.out.println("\nAfter Interest:");
-        System.out.println("Savings: $" + String.format("%.2f", savings.getBalance()));
+        // Launch the Swing GUI on the Event Dispatch Thread.
+        SwingUtilities.invokeLater(() -> {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception ignored) {
+                // Fall back to the default look and feel.
+            }
+            new BankGUI().setVisible(true);
+        });
     }
 }

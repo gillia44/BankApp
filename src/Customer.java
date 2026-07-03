@@ -35,6 +35,46 @@ public class Customer {
     }
 
     /*
+    * Gets the customer's address.
+    * @return The customer's address.
+    */
+    public String getAddress() {
+        return address;
+    }
+
+    /*
+    * Gets the customer's phone number.
+    * @return The customer's phone number.
+    */
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    /*
+    * Updates the customer's name.
+    * @param The new name.
+    */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /*
+    * Updates the customer's address.
+    * @param The new address.
+    */
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    /*
+    * Updates the customer's phone number.
+    * @param The new phone number.
+    */
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    /*
     * Gets the customer's checking account.
     * @return The customer's checking account.
     */
