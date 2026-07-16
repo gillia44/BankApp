@@ -57,7 +57,6 @@ public class BankGUI extends JFrame {
     private final JTextField savingsAmountField = new JTextField();
     private final JButton savingsDepositButton = new JButton("Deposit");
     private final JButton savingsWithdrawButton = new JButton("Withdraw");
-    private final JButton savingsInterestButton = new JButton("Apply Interest");
     private final JTextArea savingsHistoryArea = new JTextArea();
 
     // Transfer tab
@@ -69,7 +68,7 @@ public class BankGUI extends JFrame {
     private final JTabbedPane detailTabs = new JTabbedPane();
 
     public BankGUI() {
-        super("Bank Management System");
+        super("Bank");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(900, 600);
         setLocationRelativeTo(null);
@@ -369,13 +368,11 @@ public class BankGUI extends JFrame {
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT));
         buttons.add(savingsDepositButton);
         buttons.add(savingsWithdrawButton);
-        buttons.add(savingsInterestButton);
         c.gridx = 1;
         c.gridy = 5;
         panel.add(buttons, c);
         savingsDepositButton.addActionListener(e -> depositOrWithdraw(true, true));
         savingsWithdrawButton.addActionListener(e -> depositOrWithdraw(true, false));
-        savingsInterestButton.addActionListener(e -> applyInterest());
 
         c.gridx = 0;
         c.gridy = 6;
@@ -500,6 +497,9 @@ public class BankGUI extends JFrame {
         }
     }
 
+    // Currently unused since the Apply Interest button was removed
+    // Implementing that would require a database to keep track of
+    // all customers 
     private void applyInterest() {
         Customer customer = getSelectedCustomer();
         if (customer == null) return;
@@ -610,12 +610,11 @@ public class BankGUI extends JFrame {
 
     private void setSavingsAccountControlsEnabled(boolean hasAccount) {
         savingsOpenField.setEnabled(!hasAccount);
-        savingsRateField.setEnabled(!hasAccount);
+        savingsRateField.setEnabled(false); // Don't allow this to be changed
         savingsOpenButton.setEnabled(!hasAccount);
         savingsAmountField.setEnabled(hasAccount);
         savingsDepositButton.setEnabled(hasAccount);
         savingsWithdrawButton.setEnabled(hasAccount);
-        savingsInterestButton.setEnabled(hasAccount);
     }
 
     private String formatHistory(List<Transaction> transactions) {
